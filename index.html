@@ -3,26 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>AI Destekli Arkeolojik Elek Sistemi</title>
+
+  <!-- Mobil uyum -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #f4f4f4;
       text-align: center;
       padding: 20px;
     }
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
     video {
-      width: 100%;
-      max-width: 400px;
+      width: 90%;
+      max-width: 420px;
       border: 2px solid #333;
       border-radius: 10px;
       margin-top: 10px;
+      background: black;
     }
+
     button {
-      padding: 10px 15px;
-      margin: 10px;
+      padding: 10px 18px;
       font-size: 16px;
+      margin: 8px;
+      cursor: pointer;
+    }
+
+    #durum {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #sonuc {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -34,22 +60,67 @@
   <video id="kamera" autoplay playsinline></video>
 
   <div>
-    <button onclick="kamerayiBaslat()">📷 Taramayı Başlat</button>
+    <button onclick="kamerayiAc()">📷 Taramayı Başlat</button>
+    <button onclick="tanilamaYap()">🧠 Tanılama Yap</button>
   </div>
 
   <p id="durum"></p>
+  <div id="sonuc"></div>
 
   <script>
-    function kamerayiBaslat() {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    const eserler = [
+      {
+        ad: "Seramik Parçası",
+        donem: "Roma Dönemi (M.S. 1–3. yy)",
+        aciklama: "Günlük kullanım kaplarına ait seramik parça."
+      },
+      {
+        ad: "Obsidyen Ok Ucu",
+        donem: "Neolitik Çağ (M.Ö. 8000–5500)",
+        aciklama: "Avcılıkta kullanılan keskin obsidyen uç."
+      },
+      {
+        ad: "Bronz Fibula",
+        donem: "Helenistik Dönem (M.Ö. 330–30)",
+        aciklama: "Giysi tutturmak için kullanılan metal aksesuar."
+      },
+      {
+        ad: "Kemik Alet",
+        donem: "Kalkolitik Dönem (M.Ö. 5500–3000)",
+        aciklama: "Günlük işlerde kullanılan işlenmiş kemik."
+      },
+      {
+        ad: "Taş Balta",
+        donem: "Neolitik Çağ (M.Ö. 9000–7000)",
+        aciklama: "Ağaç kesimi ve inşada kullanılan taş alet."
+      }
+    ];
+
+    function kamerayiAc() {
+      navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
           document.getElementById("kamera").srcObject = stream;
-          document.getElementById("durum").innerText = "Kamera aktif.";
-        })
-        .catch(err => {
           document.getElementById("durum").innerText =
-            "Kamera açılamadı. HTTPS üzerinden açıldığından emin olun.";
+            "Kamera aktif. Elek üzerindeki nesne analiz ediliyor...";
+        })
+        .catch(() => {
+          document.getElementById("durum").innerText =
+            "Kamera açılamadı. Lütfen izinleri kontrol edin.";
         });
+    }
+
+    function tanilamaYap() {
+      const secilen = eserler[Math.floor(Math.random() * eserler.length)];
+
+      document.getElementById("sonuc").innerHTML = `
+        <h3>🔍 Tanılama Sonucu</h3>
+        <p><strong>Eser Türü:</strong> ${secilen.ad}</p>
+        <p><strong>Tahmini Dönem:</strong> ${secilen.donem}</p>
+        <p><strong>Açıklama:</strong> ${secilen.aciklama}</p>
+        <p style="color:gray; font-size:13px;">
+          *Bu sonuç yapay zekâ destekli ön değerlendirme simülasyonudur.*
+        </p>
+      `;
     }
   </script>
 
