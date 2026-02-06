@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>AI Destekli Arkeolojik Elek Sistemi</title>
 
-  <!-- Mobil uyum -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tablet ve mobil uyum -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
   <style>
     body {
@@ -20,7 +20,7 @@
     }
 
     video {
-      width: 90%;
+      width: 100%;
       max-width: 420px;
       border: 2px solid #333;
       border-radius: 10px;
@@ -33,6 +33,7 @@
       font-size: 16px;
       margin: 8px;
       cursor: pointer;
+      border-radius: 8px;
     }
 
     #durum {
@@ -57,6 +58,7 @@
   <h2>AI Destekli Arkeolojik Elek Sistemi</h2>
   <p>Elek üzerinde kalan eserlerin hızlı ön değerlendirmesi</p>
 
+  <!-- playsinline tabletlerde ÇOK ÖNEMLİ -->
   <video id="kamera" autoplay playsinline></video>
 
   <div>
@@ -96,17 +98,33 @@
       }
     ];
 
+    let aktifStream = null;
+
     function kamerayiAc() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-          document.getElementById("kamera").srcObject = stream;
-          document.getElementById("durum").innerText =
-            "Kamera aktif. Elek üzerindeki nesne analiz ediliyor...";
-        })
-        .catch(() => {
-          document.getElementById("durum").innerText =
-            "Kamera açılamadı. Lütfen izinleri kontrol edin.";
-        });
+      // Önce varsa eski kamerayı kapat
+      if (aktifStream) {
+        aktifStream.getTracks().forEach(track => track.stop());
+      }
+
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" }
+        },
+        audio: false
+      })
+      .then(stream => {
+        aktifStream = stream;
+        const video = document.getElementById("kamera");
+        video.srcObject = stream;
+        video.play();
+
+        document.getElementById("durum").innerText =
+          "📡 Arka kamera aktif. Elek üzerindeki nesne taranıyor...";
+      })
+      .catch(() => {
+        document.getElementById("durum").innerText =
+          "❌ Kamera açılamadı. Chrome kamera izinlerini kontrol edin.";
+      });
     }
 
     function tanilamaYap() {
